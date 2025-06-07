@@ -1,6 +1,6 @@
 /**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Universidad de los Andes (Bogotá - Colombia)
- * Departamento de Ingeniería de Sistemas y Computación 
+ * Universidad de los Andes (Bogotï¿½ - Colombia)
+ * Departamento de Ingenierï¿½a de Sistemas y Computaciï¿½n 
  * Licenciado bajo el esquema Academic Free License version 2.1 
  *
  * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
@@ -13,7 +13,7 @@ package uniandes.cupi2.simuladorBancario.mundo;
 /**
  * Clase que representa la cuenta corriente de un cliente.
  */
-public class CuentaCorriente
+public class CuentaCorriente extends CuentaBancaria
 {
     // -----------------------------------------------------------------
     // Atributos
@@ -25,15 +25,16 @@ public class CuentaCorriente
     private double saldo;
 
     // -----------------------------------------------------------------
-    // Métodos
+    // MÃ©todos
     // -----------------------------------------------------------------
 
     /**
      * Inicializa la cuenta corriente. <br>
-     * <b>post: </b> Se inicializó el saldo en 0.
+     * <b>post: </b> Se inicializÃ³ el saldo en 0.
      */
     public CuentaCorriente( )
     {
+        super();
         saldo = 0;
     }
 
@@ -48,21 +49,25 @@ public class CuentaCorriente
 
     /**
      * Consigna un monto de dinero en la cuenta del cliente. <br>
-     * <b>post: </b> El saldo se incrementó en el monto de dinero dado. <br>
+     * <b>post: </b> El saldo se incrementÃ³ en el monto de dinero dado. <br>
      * @param pMonto Monto de dinero a consignar en la cuenta. pMonto > 0.
+     * @param mes Mes actual de la simulaciÃ³n.
      */
-    public void consignarMonto( double pMonto )
+    public void consignarMonto( double pMonto, int mes )
     {
         saldo = saldo + pMonto;
+        registrarTransaccion("ConsignaciÃ³n: $" + pMonto, mes);
     }
 
     /**
      * Retira un monto de dinero de la cuenta del cliente. <br>
      * <b>post: </b> El saldo se redujo en el monto de dinero dado.
      * @param pMonto Monto de dinero a retirar en la cuenta. pMonto > 0.
+     * @param mes Mes actual de la simulaciÃ³n.
      */
-    public void retirarMonto( double pMonto )
+    public void retirarMonto( double pMonto, int mes )
     {
         saldo = saldo - pMonto;
+        registrarTransaccion("Retiro: $" + pMonto, mes);
     }
 }

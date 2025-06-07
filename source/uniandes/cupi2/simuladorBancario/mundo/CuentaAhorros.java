@@ -1,6 +1,6 @@
 /**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Universidad de los Andes (Bogot· - Colombia)
- * Departamento de IngenierÌa de Sistemas y ComputaciÛn 
+ * Universidad de los Andes (Bogot√° - Colombia)
+ * Departamento de Ingenier√≠a de Sistemas y Computaci√≥n 
  * Licenciado bajo el esquema Academic Free License version 2.1 
  *
  * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
@@ -10,10 +10,12 @@
  */
 package uniandes.cupi2.simuladorBancario.mundo;
 
+import java.util.ArrayList;
+
 /**
  * Clase que representa la cuenta de ahorro de un cliente.
  */
-public class CuentaAhorros
+public class CuentaAhorros extends CuentaBancaria
 {
     // -----------------------------------------------------------------
     // Atributos
@@ -25,22 +27,30 @@ public class CuentaAhorros
     private double saldo;
 
     /**
-     * InterÈs mensual que paga la cuenta de ahorro.
+     * Inter√©s mensual que paga la cuenta de ahorro.
      */
     private double interesMensual;
 
+    /**
+     * Historial de saldos por mes (√≠ndice = mes-1).
+     */
+    private ArrayList<Double> historialSaldos;
+
     // -----------------------------------------------------------------
-    // MÈtodos
+    // M√©todos
     // -----------------------------------------------------------------
 
     /**
-     * Inicializa la cuenta de ahorro con el interÈs mensual que paga el banco. <br>
-     * <b>post: </b> Se inicializÛ el saldo en 0 y el interÈs mensual en 0.006.
+     * Inicializa la cuenta de ahorro con el inter√©s mensual que paga el banco. <br>
+     * <b>post: </b> Se inicializ√≥ el saldo en 0 y el inter√©s mensual en 0.006.
      */
     public CuentaAhorros( )
     {
+        super();
         saldo = 0;
         interesMensual = 0.006;
+        historialSaldos = new ArrayList<>();
+        historialSaldos.add(saldo); // mes 1
     }
 
     /**
@@ -53,8 +63,8 @@ public class CuentaAhorros
     }
 
     /**
-     * Retorna el interÈs mensual. <br>
-     * @return InterÈs mensual de la cuenta de ahorros.
+     * Retorna el inter√©s mensual. <br>
+     * @return Inter√©s mensual de la cuenta de ahorros.
      */
     public double darInteresMensual( )
     {
@@ -63,30 +73,73 @@ public class CuentaAhorros
 
     /**
      * Consigna un monto de dinero en la cuenta del cliente. <br>
-     * <b>post: </b> El saldo se incrementÛ en el monto de dinero ingresado. <br>
+     * <b>post: </b> El saldo se increment√≥ en el monto de dinero ingresado. <br>
      * @param pMonto Monto de dinero a consignar en la cuenta. pMonto > 0.
+     * @param mes Mes actual de la simulaci√≥n.
      */
-    public void consignarMonto( double pMonto )
+    public void consignarMonto( double pMonto, int mes )
     {
         saldo = saldo + pMonto;
+        registrarTransaccion("Consignaci√≥n: $" + pMonto, mes);
+        registrarSaldoMensual(mes);
     }
 
     /**
      * Retira un monto de dinero de la cuenta de ahorros. <br>
      * <b>post: </b> El saldo se redujo en el valor dado.
      * @param pMonto Monto de dinero a retirar de la cuenta de ahorros. pMonto > 0.
+     * @param mes Mes actual de la simulaci√≥n.
      */
-    public void retirarMonto( double pMonto )
+    public void retirarMonto( double pMonto, int mes )
     {
         saldo = saldo - pMonto;
+        registrarTransaccion("Retiro: $" + pMonto, mes);
+        registrarSaldoMensual(mes);
     }
 
     /**
-     * Actualiza el saldo de la cuneta de ahorros sum·ndole los intereses (ha pasado un mes). <br>
-     * <b>post: </b> El saldo actual se actualizÛ aplicando el porcentaje de interÈs mensual respectivo.
+     * Actualiza el saldo de la cuenta de ahorros sum√°ndole los intereses (ha pasado un mes). <br>
+     * <b>post: </b> El saldo actual se actualiz√≥ aplicando el porcentaje de inter√©s mensual respectivo.
+     * @param mes Mes actual de la simulaci√≥n.
      */
-    public void actualizarSaldoPorPasoMes( )
+    public void actualizarSaldoPorPasoMes( int mes )
     {
-        saldo = saldo + ( saldo * interesMensual );
+        double interes = saldo * interesMensual;
+        saldo = saldo + interes;
+        registrarTransaccion("Inter√©s mensual: $" + interes, mes);
+        registrarSaldoMensual(mes);
+    }
+
+    /**
+     * Registra el saldo del mes correspondiente en el historial.
+     * @param mes Mes actual (1-indexado).
+     */
+    public void registrarSaldoMensual(int mes) {
+        // Asegura que la lista tenga tama√±o suficiente
+        while (historialSaldos.size() < mes) {
+            historialSaldos.add(saldo);
+        }
+        historialSaldos.set(mes-1, saldo);
+    }
+
+    /**
+     * Calcula el saldo promedio entre dos meses (inclusive) usando la f√≥rmula matem√°tica.
+     * @param mesInicio Mes de inicio (1-indexado).
+     * @param mesFin Mes de fin (1-indexado).
+     * @return Saldo promedio en el intervalo, o -1 si el rango es inv√°lido.
+     */
+    public double calcularSaldoPromedio(int mesInicio, int mesFin) {
+        if (mesInicio < 1 || mesFin < mesInicio) {
+            return -1;
+        }
+        double suma = 0;
+        double saldoMes = saldo;
+        int meses = mesFin - mesInicio + 1;
+        // Simular el saldo de cada mes futuro
+        for (int i = 0; i < meses; i++) {
+            suma += saldoMes;
+            saldoMes = saldoMes * (1 + interesMensual);
+        }
+        return suma / meses;
     }
 }
